@@ -1,0 +1,15 @@
+Package: surveyutils
+Type: Package
+Title: Survey Utilities for Managing Survey Data
+Version: 0.1.0
+Author: Peter M. Dahlgren
+Maintainer: Peter M. Dahlgren <peterdalle@gmail.com>
+Description: Various helper methods to deal with survey data. E.g., convert
+    scales, generate R code with correlations from a data frame for
+    reproducibility, create regression coefficient plots.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat (>= 2.1.0)
+RoxygenNote: 6.1.1
