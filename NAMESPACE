@@ -2,8 +2,10 @@
 
 export(coefplot_compare)
 export(coefplot_mlm)
+export(confidence_interval)
 export(convert_scale)
-export(generate_corr_code)
+export(corr_histogram)
+export(generate_cov_code)
 export(grouped_coefplot_mlm)
 export(reverse_code)
 export(rotate_legend)
