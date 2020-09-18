@@ -4,13 +4,24 @@
 \alias{grouped_coefplot_mlm}
 \title{Grouped coefficient plot for mixed-effects model}
 \usage{
-grouped_coefplot_mlm(model, intercept = FALSE, sort = FALSE,
-  title = "Predictors", conf.level = 0.95,
-  caption = "Bars represent 95 \% C.I.", labels = NULL,
-  grouplabels = NULL, nudge_y = 0.3, nudge_x = 0)
+grouped_coefplot_mlm(
+  model,
+  intercept = FALSE,
+  sort = FALSE,
+  title = "Predictors",
+  conf.level = 0.95,
+  caption = "Bars represent 95 \% C.I.",
+  labels = NULL,
+  grouplabels = NULL,
+  nudge_y = 0.3,
+  nudge_x = 0
+)
 }
 \arguments{
 \item{nudge_x}{}
+}
+\value{
+
 }
 \description{
 Grouped coefficient plot for mixed-effects model

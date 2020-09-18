@@ -9,6 +9,9 @@ rotate_legend(gg)
 \arguments{
 \item{gg}{}
 }
+\value{
+
+}
 \description{
 Solution by Sandy Muspratt:
 https://stackoverflow.com/questions/40229263/how-to-rotate-legend-symbols-in-ggplot2?noredirect=1&lq=1

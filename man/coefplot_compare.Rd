@@ -4,11 +4,24 @@
 \alias{coefplot_compare}
 \title{Coefficient plot for comparison of two regression models}
 \usage{
-coefplot_compare(model1, model2, modelnames = NULL, intercept = FALSE,
-  sort = FALSE, title = "Predictors", subtitle = NULL,
-  caption = "Bars represent 95 \% C.I.", labels1 = NULL,
-  labels2 = NULL, nudge_x = 0, nudge_y = 0.3, dodge = 0.5,
-  conf.level = 0.95, highlight.significant = FALSE)
+coefplot_compare(
+  model1,
+  model2,
+  modelnames = NULL,
+  intercept = FALSE,
+  sort = FALSE,
+  title = "Predictors",
+  subtitle = NULL,
+  caption = NULL,
+  labels1 = NULL,
+  labels2 = NULL,
+  reverse_labels = FALSE,
+  nudge_x = 0,
+  nudge_y = 0.3,
+  dodge = 0.5,
+  conf.level = 0.95,
+  highlight.significant = FALSE
+)
 }
 \arguments{
 \item{model1}{model 1.}
@@ -34,6 +47,8 @@ as the number of estimates in the model, including the intercept.}
 
 \item{labels2}{vector with label names for model 2. Should be the same length
 as the number of estimates in the model, including the intercept.}
+
+\item{reverse_labels}{whether or not to reverse the label ordering.}
 
 \item{nudge_x}{nudge the point label estimates on the X axis so that they do
 not overlap the point.}

@@ -4,8 +4,14 @@
 \alias{tidy_model}
 \title{Tidy model and append labels, names, sort and remove intercept}
 \usage{
-tidy_model(model, name = NULL, intercept = FALSE, sort = FALSE,
-  labels = NULL, conf.level = 0.95)
+tidy_model(
+  model,
+  name = NULL,
+  intercept = FALSE,
+  sort = FALSE,
+  labels = NULL,
+  conf.level = 0.95
+)
 }
 \arguments{
 \item{model}{a regression model}
@@ -18,6 +24,9 @@ tidy_model(model, name = NULL, intercept = FALSE, sort = FALSE,
 
 \item{labels}{vector of estimate label names. Must be the same length as
 the number of estimates (including intercept).}
+}
+\value{
+
 }
 \description{
 Tidy model and append labels, names, sort and remove intercept

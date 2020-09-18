@@ -1,12 +1,3 @@
-library(lme4)
-library(broom)
-library(sjlabelled)
-library(sjPlot)
-library(directlabels)
-library(effects)
-library(ggplot2)
-
-
 #' Tidy model and append labels, names, sort and remove intercept
 #'
 #' @param model a regression model
@@ -25,23 +16,19 @@ tidy_model <- function(model, name=NULL, intercept=FALSE,
   df <- broom::tidy(model, conf.int=TRUE, conf.level=conf.level) %>%
     dplyr::mutate(labelestimate = paste(round(estimate, 2), sep=""))
 
-  # Significant at 5% alpha.
+  # Significant at alpha.
   df$significant<- ifelse(df$conf.low < 0 & df$conf.high > 0,
                           "Not significant", "Significant")
 
+  # Rename labels.
+  df$label <- as.character(df$term)
   if(!is.null(labels)) {
-    # Rename labels.
-    if(class(model) == "lmerMod") {
-      # Add empty string for the sd_ terms (one for each level).
-      emptystring <- rep("", abs(NROW(df) - NROW(labels)))
-      df$label <- c(labels, emptystring)
+    for (term in unique(df$term)) {
+      df$label[df$term == term] <- labels[term]
     }
-    if(class(model) == "lm") {
-      df$label <- labels
-    }
-  } else {
-    df$label <- df$term
+    df$label[is.na(df$label)] <- df$term[is.na(df$label)]
   }
+  df$label <- as.factor(df$label)
 
   if(sort) {
     # Sort by estimate, descdending order.
@@ -64,6 +51,45 @@ tidy_model <- function(model, name=NULL, intercept=FALSE,
 }
 
 
+
+#' Title
+#'
+#' @param old_labels character vector with old labels.
+#' @param new_labels character vector with new labels.
+#'
+#' @return character vector with the old labels replaced with the new labels.
+#' @export
+#'
+#' @examples
+relabel <- function(old_labels, new_labels) {
+  if (is.null(new_labels)) {
+    return(old_labels)
+  }
+
+  for (term in unique(old_label)) {
+    old_label[old_label == term] <- new_label[term]
+  }
+  old_labels[is.na(old_labels)] <- new_labels[is.na(ol_labels)]
+
+  df$label <- as.factor(df$label)
+
+}
+
+
+#' Coefficient plot for a regression model
+#'
+#' @param model
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+coefplot <- function(model, ...) {
+  coefplot_compare(model, model, ...)
+}
+
+
 #' Coefficient plot for comparison of two regression models
 #'
 #' Works and is tested with ordinary lm and mixed-effect lme4 models.
@@ -82,6 +108,7 @@ tidy_model <- function(model, name=NULL, intercept=FALSE,
 #' as the number of estimates in the model, including the intercept.
 #' @param labels2 vector with label names for model 2. Should be the same length
 #' as the number of estimates in the model, including the intercept.
+#' @param reverse_labels whether or not to reverse the label ordering.
 #' @param nudge_x nudge the point label estimates on the X axis so that they do
 #' not overlap the point.
 #' @param nudge_y nudge the point label estimates on the Y axis so that they do
@@ -97,8 +124,10 @@ tidy_model <- function(model, name=NULL, intercept=FALSE,
 #' @examples
 coefplot_compare <- function(model1, model2, modelnames=NULL,
                              intercept=FALSE, sort=FALSE, title="Predictors",
-                             subtitle=NULL, caption="Bars represent 95 % C.I.",
-                             labels1=NULL, labels2=NULL, nudge_x=0, nudge_y=0.3,
+                             subtitle=NULL, caption=NULL,
+                             labels1=NULL, labels2=NULL,
+                             reverse_labels=FALSE,
+                             nudge_x=0, nudge_y=0.3,
                              dodge=0.5,
                              conf.level=0.95,
                              highlight.significant=FALSE) {
@@ -108,10 +137,32 @@ coefplot_compare <- function(model1, model2, modelnames=NULL,
     modelnames[2] <- deparse(substitute(model2))
   }
 
-  df <- rbind(tidy_model(model1, name=modelnames[1], intercept, sort, labels1, conf.level=conf.level),
-              tidy_model(model2, name=modelnames[2], intercept, sort, labels2, conf.level=conf.level))
+  # If the models have different significant levels.
+  if (is.numeric(conf.level) & length(conf.level) == 2) {
+    conf.level1 <- conf.level[1]
+    conf.level2 <- conf.level[2]
+    if (is.null(caption)) {
+      caption <- paste0("Bars represent ", round(conf.level1 * 100, 2),
+                        " and ", round(conf.level2 * 100, 2),
+                        "% C.I.")
+    }
+  } else {
+    conf.level1 <- conf.level
+    conf.level2 <- conf.level
+    if (is.null(caption)) {
+      caption <- paste0("Bars represent ", round(conf.level * 100, 2), "% C.I.")
+    }
+  }
+
+  df <- rbind(tidy_model(model1, name=modelnames[1], intercept, sort, labels1, conf.level=conf.level1),
+              tidy_model(model2, name=modelnames[2], intercept, sort, labels2, conf.level=conf.level2))
 
   df <- df %>% na.exclude()
+
+  if (reverse_labels) {
+    df$label <- reorder(df$label, desc(df$label))
+  }
+
 
   if(highlight.significant) {
     gg <- ggplot2::ggplot(df, aes(label, estimate, color=modelname, alpha=significant))
@@ -125,7 +176,10 @@ coefplot_compare <- function(model1, model2, modelnames=NULL,
                     position = position_dodge(width = dodge)) +
     ggplot2::scale_color_manual(values=c("black", "gray70")) +
     #geom_text(aes(label=labelestimate), alpha=0.7, nudge_y=nudge_y, nudge_x=nudge_x) +
-    ggplot2::theme(legend.position = "bottom") +
+    ggplot2::theme(panel.grid = element_blank(),
+                   axis.text = element_text(color="black"),
+                   legend.position = "bottom",
+                   legend.direction='vertical') +
     ggplot2::labs(title = title,
                    subtitle = subtitle,
                    linetype = NULL,
@@ -265,8 +319,8 @@ rotate_legend <- function(gg) {
   grid::grid.ls(grid::grid.force(g))$name   # "GRID.segments"
 
   # Check the structure of the segment grobs
-  str(grid::getGrob(grid::grid.force(g), grid::gPath("GRID.segments"),
-                    grep = TRUE, global = TRUE))
+  #str(grid::getGrob(grid::grid.force(g), grid::gPath("GRID.segments"),
+  #                  grep = TRUE, global = TRUE))
 
   # Edit the segment grobs using the editGrob() function
   # 1) Rotate the segments
@@ -275,10 +329,15 @@ rotate_legend <- function(gg) {
                       vp = grid::viewport(angle = 90))
 
   # 2) set end points of segments
-  #    g <- editGrob(grid.force(g), gPath("GRID.segments"), grep = TRUE, global = TRUE,
-  #         x0 = unit(0.1, "npc"), y0 = unit(0.5, "npc"), x1 = unit(0.9, "npc"), y1 = unit(0.5, "npc"))
+  g <- grid::editGrob(grid::grid.force(g), grid::gPath("GRID.segments"),
+                      grep = TRUE, global = TRUE,
+                      x0 = ggplot2::unit(0.1, "npc"),
+                      y0 = ggplot2::unit(0.5, "npc"),
+                      x1 = ggplot2::unit(0.9, "npc"),
+                      y1 = ggplot2::unit(0.5, "npc"))
 
   # Draw it
   grid::grid.newpage()
   grid::grid.draw(g)
 }
+

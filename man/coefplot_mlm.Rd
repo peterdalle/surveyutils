@@ -4,13 +4,24 @@
 \alias{coefplot_mlm}
 \title{Coefficient plot for mixed-effects model}
 \usage{
-coefplot_mlm(model, intercept = FALSE, sort = FALSE,
-  title = "Predictors", subtitle = "",
-  caption = "Bars represent 95 \% C.I.", labels = NULL,
-  conf.level = 0.95, nudge_x = 0, nudge_y = 0.3)
+coefplot_mlm(
+  model,
+  intercept = FALSE,
+  sort = FALSE,
+  title = "Predictors",
+  subtitle = "",
+  caption = "Bars represent 95 \% C.I.",
+  labels = NULL,
+  conf.level = 0.95,
+  nudge_x = 0,
+  nudge_y = 0.3
+)
 }
 \arguments{
 \item{nudge_y}{}
+}
+\value{
+
 }
 \description{
 Coefficient plot for mixed-effects model

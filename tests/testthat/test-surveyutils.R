@@ -25,3 +25,9 @@ test_that("confidence_interval", {
   expect_equal(round(confidence_interval(100, 15, 1000)$upper, 4), 100.9297)
   expect_equal(round(confidence_interval(m=100, s=15, n=1000)$upper, 4), 100.9297)
 })
+
+test_that("tab", {
+  expect_equal(tab(iris$Species)$n[2], 50)
+  expect_equal(tab(iris$Species)$percent[2], 33.3)
+  expect_equal(tab(iris$Species)$cum_percent[2], 66.7)
+})
